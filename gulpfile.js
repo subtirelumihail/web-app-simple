@@ -11,16 +11,12 @@ var jshint = require('gulp-jshint'),
 	autoprefix = require('gulp-autoprefixer'),
 	minifyCSS = require('gulp-minify-css'),
 	livereload = require('gulp-livereload'),
-  jade = require('gulp-jade'),
   gulpBowerFiles = require('gulp-bower-files');
 
 
 //Sources
   var htmlSrc = './build/*.html',
       htmlDst = './build';
-  var jadeSrc = './src/*.jade',
-      jadeIncludes = './src/includes/*.jade',
-      jadeDst = './build';
   var imgSrc = './src/img/**/*',
       imgDst = './build/img';
   var jsSrc = './src/js/*.js',
@@ -76,18 +72,9 @@ gulp.task('livereload', function() {
   });
 });
 
-gulp.task('jade', function () {
-  var YOUR_LOCALS = {};
-  gulp.src(jadeSrc)
-    .pipe(jade({
-      locals: YOUR_LOCALS,
-      pretty: true
-     }))
-    .pipe(gulp.dest('./build'));
-});
 
 // default gulp task
-gulp.task('default', ['imagemin', 'scripts', 'styles','livereload','jade', 'bower-files'], function() {
+gulp.task('default', ['imagemin', 'scripts', 'styles','livereload', 'bower-files'], function() {
 	  // watch for JS changes
 	  gulp.watch(jsSrc, function() {
 	    gulp.run('scripts', 'jshint');
@@ -98,11 +85,4 @@ gulp.task('default', ['imagemin', 'scripts', 'styles','livereload','jade', 'bowe
 	    gulp.run('styles');
 	  });
 
-    // watch for Jade changes
-    gulp.watch(jadeSrc, function() {
-      gulp.run('jade');
-    });
-    gulp.watch(jadeIncludes, function() {
-      gulp.run('jade');
-    });
 });
