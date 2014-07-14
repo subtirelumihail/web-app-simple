@@ -3,15 +3,17 @@ var gulp = require('gulp');
  
 // include plug-ins
 var jshint = require('gulp-jshint'),
-	changed = require('gulp-changed'),
-	imagemin = require('gulp-imagemin'),
-	concat = require('gulp-concat'),
-	stripDebug = require('gulp-strip-debug'),
-	uglify = require('gulp-uglify'),
-	autoprefix = require('gulp-autoprefixer'),
-	minifyCSS = require('gulp-minify-css'),
-	livereload = require('gulp-livereload'),
-  gulpBowerFiles = require('gulp-bower-files');
+  	changed = require('gulp-changed'),
+  	imagemin = require('gulp-imagemin'),
+  	concat = require('gulp-concat'),
+  	stripDebug = require('gulp-strip-debug'),
+  	uglify = require('gulp-uglify'),
+  	autoprefix = require('gulp-autoprefixer'),
+  	minifyCSS = require('gulp-minify-css'),
+  	livereload = require('gulp-livereload'),
+    compass = require('gulp-compass'),
+    path = require('path'),
+    gulpBowerFiles = require('gulp-bower-files');
 
 
 //Sources
@@ -24,6 +26,15 @@ var jshint = require('gulp-jshint'),
   var cssSrc = './src/css/*.css',
   	  cssDst = './build/css/';
 
+/*Compass*/
+gulp.task('compass', function() {
+  gulp.src('./src/sass/*.scss')
+  .pipe(compass({
+    css: './src/css',
+    sass: './src/sass'
+  }))
+  .pipe(gulp.dest('./src/css'));
+});
 
 /*Bower*/
 gulp.task("bower-files", function(){
@@ -74,7 +85,7 @@ gulp.task('livereload', function() {
 
 
 // default gulp task
-gulp.task('default', ['imagemin', 'scripts', 'styles','livereload', 'bower-files'], function() {
+gulp.task('default', ['imagemin', 'scripts', 'styles','livereload', 'bower-files', 'compass'], function() {
 	  // watch for JS changes
 	  gulp.watch(jsSrc, function() {
 	    gulp.run('scripts', 'jshint');
@@ -84,5 +95,10 @@ gulp.task('default', ['imagemin', 'scripts', 'styles','livereload', 'bower-files
 	  gulp.watch(cssSrc, function() {
 	    gulp.run('styles');
 	  });
+
+    // watch for SASS changes
+    gulp.watch('./src/sass/*.scss', function() {
+      gulp.run('compass');
+    });
 
 });
