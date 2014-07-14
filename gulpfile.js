@@ -12,8 +12,7 @@ var jshint = require('gulp-jshint'),
   	minifyCSS = require('gulp-minify-css'),
   	livereload = require('gulp-livereload'),
     compass = require('gulp-compass'),
-    path = require('path'),
-    gulpBowerFiles = require('gulp-bower-files');
+    path = require('path');
 
 
 //Sources
@@ -26,6 +25,7 @@ var jshint = require('gulp-jshint'),
   var cssSrc = './src/css/*.css',
   	  cssDst = './build/css/';
 
+
 /*Compass*/
 gulp.task('compass', function() {
   gulp.src('./src/sass/*.scss')
@@ -36,10 +36,16 @@ gulp.task('compass', function() {
   .pipe(gulp.dest('./src/css'));
 });
 
-/*Bower*/
-gulp.task("bower-files", function(){
-    gulpBowerFiles().pipe(gulp.dest("./lib"));
+/*Compass bootstrap*/
+gulp.task('compass-bootstrap', function() {
+  gulp.src('./bower_components/boostrap-sass/assets/stylesheets/*.scss')
+  .pipe(compass({
+    css: './bower_components/boostrap-sass/assets/stylesheets',
+    sass: './bower_components/boostrap-sass/assets/stylesheets'
+  }))
+  .pipe(gulp.dest('./src/css'));
 });
+
 
 // JS hint task
 gulp.task('jshint', function() {
@@ -66,6 +72,15 @@ gulp.task('scripts', function() {
 });
 
 
+// JS concat, strip debugging and minify library scripts
+gulp.task('bower-scripts', function() {
+  gulp.src(['./bower_components/jquery/dist/jquery.js', './bower_components/boostrap-sass/assets/javascripts/bootstrap/*.js'])
+    .pipe(concat('libs.js'))
+   // .pipe(stripDebug())
+    .pipe(uglify())
+    .pipe(gulp.dest(jsDst));
+});
+
  
 // CSS concat, auto-prefix and minify
 gulp.task('styles', function() {
@@ -85,7 +100,7 @@ gulp.task('livereload', function() {
 
 
 // default gulp task
-gulp.task('default', ['imagemin', 'scripts', 'styles','livereload', 'bower-files', 'compass'], function() {
+gulp.task('default', ['imagemin', 'scripts', 'styles','livereload', 'compass', 'bower-scripts', 'compass-bootstrap'], function() {
 	  // watch for JS changes
 	  gulp.watch(jsSrc, function() {
 	    gulp.run('scripts', 'jshint');
@@ -100,5 +115,10 @@ gulp.task('default', ['imagemin', 'scripts', 'styles','livereload', 'bower-files
     gulp.watch('./src/sass/*.scss', function() {
       gulp.run('compass');
     });
+
+    /* // watch for SASS changes
+    gulp.watch('./src/sass/*.scss', function() {
+      gulp.run('bower-scripts');
+    });*/
 
 });
