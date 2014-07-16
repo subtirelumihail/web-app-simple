@@ -20,7 +20,7 @@ var jshint = require('gulp-jshint'),
       htmlDst = './build';
   var imgSrc = './src/img/**/*',
       imgDst = './build/img';
-  var jsSrc = './src/js/*.js',
+  var jsSrc = './src/js/libs/*.js',
   	  jsDst = './build/js/';
   var cssSrc = './src/css/*.css',
   	  cssDst = './build/css/';
@@ -38,10 +38,10 @@ gulp.task('compass', function() {
 
 /*Compass bootstrap*/
 gulp.task('compass-bootstrap', function() {
-  gulp.src('./bower_components/boostrap-sass/assets/stylesheets/*.scss')
+  gulp.src('./bower_components/bootstrap-sass-official/assets/stylesheets/*.scss')
   .pipe(compass({
-    css: './bower_components/boostrap-sass/assets/stylesheets',
-    sass: './bower_components/boostrap-sass/assets/stylesheets'
+    css: './bower_components/bootstrap-sass-official/assets/stylesheets',
+    sass: './bower_components/bootstrap-sass-official/assets/stylesheets'
   }))
   .pipe(gulp.dest('./src/css'));
 });
@@ -49,7 +49,7 @@ gulp.task('compass-bootstrap', function() {
 
 // JS hint task
 gulp.task('jshint', function() {
-  gulp.src(jsSrc)
+  gulp.src('./src/js/')
     .pipe(jshint())
     .pipe(jshint.reporter('default'));
 });
@@ -62,24 +62,26 @@ gulp.task('imagemin', function() {
     .pipe(gulp.dest(imgDst));
 });
 
-// JS concat, strip debugging and minify
-gulp.task('scripts', function() {
-  gulp.src(jsSrc)
-    //.pipe(concat('app.js'))
-   // .pipe(stripDebug())
-   // .pipe(uglify())
-    .pipe(gulp.dest(jsDst));
-});
-
 
 // JS concat, strip debugging and minify library scripts
 gulp.task('bower-scripts', function() {
-  gulp.src(['./bower_components/jquery/dist/jquery.js', './bower_components/boostrap-sass/assets/javascripts/bootstrap/*.js'])
-    .pipe(concat('libs.js'))
+  gulp.src(['./bower_components/jquery/dist/jquery.js', './bower_components/bootstrap-sass-official/assets/javascripts/bootstrap.js'])
+    .pipe(concat('_libs.js'))
    // .pipe(stripDebug())
+    .pipe(uglify())
+    .pipe(gulp.dest('./src/js/libs/'));
+});
+
+
+// JS concat, strip debugging and minify
+gulp.task('scripts', function() {
+  gulp.src([jsSrc, './src/js/*.js'])
+    .pipe(concat('libs.js'))
+    .pipe(stripDebug())
     .pipe(uglify())
     .pipe(gulp.dest(jsDst));
 });
+
 
  
 // CSS concat, auto-prefix and minify
@@ -99,12 +101,19 @@ gulp.task('livereload', function() {
 });
 
 
+// Bower init the scripts and styles
+gulp.task('bower', ['bower-scripts', 'compass-bootstrap']);
+
 // default gulp task
-gulp.task('default', ['imagemin', 'scripts', 'styles','livereload', 'compass', 'bower-scripts', 'compass-bootstrap'], function() {
+gulp.task('default', ['imagemin', 'bower-scripts', 'compass-bootstrap', 'scripts', 'styles','livereload', 'compass'], function() {
 	  // watch for JS changes
 	  gulp.watch(jsSrc, function() {
-	    gulp.run('scripts', 'jshint');
+	    gulp.run('scripts');
 	  });
+
+     gulp.watch('./src/js/*.js', function() {
+      gulp.run('scripts', 'jshint');
+    });
 	 
 	  // watch for CSS changes
 	  gulp.watch(cssSrc, function() {
@@ -115,10 +124,5 @@ gulp.task('default', ['imagemin', 'scripts', 'styles','livereload', 'compass', '
     gulp.watch('./src/sass/*.scss', function() {
       gulp.run('compass');
     });
-
-    /* // watch for SASS changes
-    gulp.watch('./src/sass/*.scss', function() {
-      gulp.run('bower-scripts');
-    });*/
 
 });
