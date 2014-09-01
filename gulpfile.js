@@ -16,32 +16,32 @@ var jshint = require('gulp-jshint'),
 
 
 //Sources
-  var htmlSrc = './build/*.html',
-      htmlDst = './build';
-  var imgSrc = './src/img/**/*',
-      imgDst = './build/img';
-  var jsSrc = './src/js/libs/*.js',
-  	  jsDst = './build/js/';
-  var cssSrc = './src/css/*.css',
-  	  cssDst = './build/css/';
+  var htmlSrc = 'assets/*.html',
+      htmlDst = 'assets';
+  var imgSrc  = 'src/img/**/*',
+      imgDst  = 'assets/img';
+  var jsSrc   = 'src/js/libs/*.js',
+  	  jsDst   = 'assets/js/';
+  var cssSrc  = 'src/css/*.css',
+  	  cssDst  = './assets/css/';
 
 
 /*Compass*/
 gulp.task('compass', function() {
-  gulp.src('./src/sass/*.scss')
+  gulp.src('src/sass/*.scss')
   .pipe(compass({
-    css: './src/css',
-    sass: './src/sass'
+    css: 'src/css',
+    sass: 'src/sass'
   }))
-  .pipe(gulp.dest('./src/css'));
+  .pipe(gulp.dest('src/css'));
 });
 
 /*Compass bootstrap*/
 gulp.task('compass-bootstrap', function() {
-  gulp.src('./bower_components/bootstrap-sass-official/assets/stylesheets/*.scss')
+  gulp.src('bower_components/bootstrap-sass-official/assets/stylesheets/*.scss')
   .pipe(compass({
-    css: './bower_components/bootstrap-sass-official/assets/stylesheets',
-    sass: './bower_components/bootstrap-sass-official/assets/stylesheets'
+    css: 'bower_components/bootstrap-sass-official/assets/stylesheets',
+    sass: 'bower_components/bootstrap-sass-official/assets/stylesheets'
   }))
   .pipe(gulp.dest('./src/css'));
 });
@@ -49,7 +49,7 @@ gulp.task('compass-bootstrap', function() {
 
 // JS hint task
 gulp.task('jshint', function() {
-  gulp.src('./src/js/')
+  gulp.src('src/js/')
     .pipe(jshint())
     .pipe(jshint.reporter('default'));
 });
@@ -65,17 +65,17 @@ gulp.task('imagemin', function() {
 
 // JS concat, strip debugging and minify library scripts
 gulp.task('bower-scripts', function() {
-  gulp.src(['./bower_components/jquery/dist/jquery.js', './bower_components/bootstrap-sass-official/assets/javascripts/bootstrap.js'])
+  gulp.src(['bower_components/jquery/dist/jquery.js', 'bower_components/bootstrap-sass-official/assets/javascripts/bootstrap.js'])
     .pipe(concat('_libs.js'))
    // .pipe(stripDebug())
     .pipe(uglify())
-    .pipe(gulp.dest('./src/js/libs/'));
+    .pipe(gulp.dest('src/js/libs/'));
 });
 
 
 // JS concat, strip debugging and minify
 gulp.task('scripts', function() {
-  gulp.src([jsSrc, './src/js/*.js'])
+  gulp.src([jsSrc, 'src/js/*.js'])
     .pipe(concat('libs.js'))
     .pipe(stripDebug())
     .pipe(uglify())
@@ -95,7 +95,7 @@ gulp.task('styles', function() {
 
 gulp.task('livereload', function() {
   var server = livereload();
-  gulp.watch('build/**').on('change', function(file) {
+  gulp.watch('assets/**').on('change', function(file) {
       server.changed(file.path);
   });
 });
@@ -111,7 +111,7 @@ gulp.task('default', ['imagemin', 'bower-scripts', 'compass-bootstrap', 'scripts
 	    gulp.run('scripts');
 	  });
 
-     gulp.watch('./src/js/*.js', function() {
+     gulp.watch('src/js/*.js', function() {
       gulp.run('scripts', 'jshint');
     });
 	 
@@ -121,7 +121,7 @@ gulp.task('default', ['imagemin', 'bower-scripts', 'compass-bootstrap', 'scripts
 	  });
 
     // watch for SASS changes
-    gulp.watch('./src/sass/*.scss', function() {
+    gulp.watch('src/sass/*.scss', function() {
       gulp.run('compass');
     });
 

@@ -1,0 +1,19 @@
+{
+  "name": "mycv",
+  "version": "0.0.0",
+  "homepage": "https://github.com/subtirelumihail/web-app-simple",
+  "authors": [
+    "Subtirelu Mihail <dazzzz2007@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap-sass-official": "~3.2.0+1"
+  }
+}
