@@ -1,4 +1,4 @@
-web-app-simple
+Simple web application skeleton
 ==============
 
 >Simple gulp + bower + compass + jquery web app template
