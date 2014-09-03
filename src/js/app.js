@@ -1,2 +1,2 @@
-
-alert('a');
+//App js
+console.log('it works');
