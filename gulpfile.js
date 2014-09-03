@@ -14,6 +14,7 @@ var jshint = require('gulp-jshint'),
     compass = require('gulp-compass'),
     mainBowerFiles = require('main-bower-files'),
     rimraf = require('gulp-rimraf'),
+    connect = require('gulp-connect'),
     path = require('path');
 
 
@@ -30,6 +31,12 @@ var jshint = require('gulp-jshint'),
   var compassSrc = ['libs/*.scss', 'src/sass/*.scss'];
 
   var bowerDest = 'libs';
+
+// Node server
+
+gulp.task('connect', function() {
+  connect.server();
+});
 
 /*Bower components*/
 gulp.task('bower-files', function() {
@@ -111,7 +118,7 @@ gulp.task('watch', function() {
 ================================
 */
 
-// CSS concat, auto-prefix and minify
+// Deletes the assets folder
 gulp.task('clean', function(cb) {
    return gulp.src('./assets')
     .pipe(rimraf({ force: true }));
@@ -126,6 +133,7 @@ gulp.task('styles-prod', function() {
     .pipe(gulp.dest(cssDst));
 });
 
+// JS  striping the console, concatenate and uglify it
 gulp.task('scripts-prod', function() {
   gulp.src(jsSrc)
     .pipe(concat('libs.js'))
@@ -137,5 +145,7 @@ gulp.task('scripts-prod', function() {
 
 
 // Development task
-gulp.task('dev', ['bower-files', 'compass', 'styles-dev', 'jshint', 'scripts-dev', 'imagemin', 'livereload', 'watch'], function() {});
-gulp.task('prod',['bower-files', 'compass', 'styles-prod', 'scripts-prod', 'imagemin'], function() {});
+gulp.task('dev', ['connect','bower-files', 'compass', 'styles-dev', 'jshint', 'scripts-dev', 'imagemin', 'livereload', 'watch'], function() {});
+
+// Production task
+gulp.task('prod',['connect','bower-files', 'compass', 'styles-prod', 'scripts-prod', 'imagemin'], function() {});
