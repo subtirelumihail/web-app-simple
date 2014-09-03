@@ -1,7 +1,7 @@
 Simple web application skeleton
 ==============
 
->Simple gulp + bower + compass + jquery web app template
+>A very simple web application skeleton that includes gulp, bower, compass, livereload and a local server
 
 
 ##How to install
