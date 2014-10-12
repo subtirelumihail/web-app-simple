@@ -1,7 +1,7 @@
 Simple web application skeleton
 ==============
 
->A very simple web application skeleton that includes gulp, bower, compass, livereload and a local server
+>A very simple web application skeleton with Gulp + BrowserSync + Compass
 
 
 ##How to install
@@ -13,10 +13,16 @@ bower init
 
 bower install
 
-npm install --save-dev gulp gulp-jshint gulp-changed gulp-imagemin gulp-concat gulp-strip-debug gulp-uglify gulp-autoprefixer gulp-minify-css gulp-livereload gulp-compass main-bower-files gulp-rimraf gulp-newer gulpc-connect
+sudo npm install --save-dev gulp gulp-jshint gulp-changed gulp-imagemin gulp-concat gulp-strip-debug gulp-uglify gulp-autoprefixer gulp-minify-css gulp-compass main-bower-files gulp-rimraf gulp-newer browser-sync
 ```
 
 ## Usage
+
+To get the bower files run:
+
+```
+gulp bower-files
+```
 
 To set the <b>development</b> mode, run this in the current project root path
 

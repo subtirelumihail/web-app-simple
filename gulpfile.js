@@ -10,11 +10,10 @@ var jshint = require('gulp-jshint'),
     uglify = require('gulp-uglify'),
     autoprefix = require('gulp-autoprefixer'),
     minifyCSS = require('gulp-minify-css'),
-    livereload = require('gulp-livereload'),
     compass = require('gulp-compass'),
     mainBowerFiles = require('main-bower-files'),
     rimraf = require('gulp-rimraf'),
-    connect = require('gulp-connect'),
+    browserSync = require("browser-sync"),
     path = require('path');
 
 
@@ -25,18 +24,25 @@ var jshint = require('gulp-jshint'),
       imgDst  = 'assets/img';
   var jsSrc   = ['libs/*.js', 'src/js/libs/*.js','src/js/*.js'],
       jsDst   = 'assets/js/';
-  var cssSrc  = ['libs/*.css', 'src/css/*.css'],
+  var cssSrc  = ['libs/*.css', 'src/css/libs/*.css', 'src/css/**/*.css', 'src/css/*.css'],
       cssDst  = './assets/css/';
+  var fontSrc  = 'src/fonts/*',
+      fontDst  = './assets/fonts/';
 
-  var compassSrc = ['libs/*.scss', 'src/sass/*.scss'];
+  var compassSrc = ['libs/*.scss', 'src/sass/**/*.scss', 'src/sass/*.scss'];
 
   var bowerDest = 'libs';
 
-// Node server
-
-gulp.task('connect', function() {
-  connect.server();
-});
+/*Connecting BrowserSync ...*/
+var server = {
+  start: function(){
+     browserSync({
+        server: {
+            baseDir: "./"
+        }
+    });
+  }
+}
 
 /*Bower components*/
 gulp.task('bower-files', function() {
@@ -46,20 +52,20 @@ gulp.task('bower-files', function() {
 
 /*Compass*/
 gulp.task('compass', function() {
-  gulp.src(compassSrc)
+ return  gulp.src(compassSrc)
   .pipe(compass({
     css: 'src/css',
-    sass: 'src/sass'
+    sass: 'src/sass',
+    require: ['breakpoint', 'jeet']
   }))
   .pipe(gulp.dest('src/css'));
 });
 
-//Minify images
-gulp.task('imagemin', function() {
-  gulp.src(imgSrc)
-    .pipe(changed(imgDst))
-    .pipe(imagemin())
-    .pipe(gulp.dest(imgDst));
+
+//Fonts
+gulp.task('fonts', function() {
+  return gulp.src(fontSrc)
+    .pipe(gulp.dest(fontDst));
 });
 
 /*
@@ -71,45 +77,30 @@ gulp.task('imagemin', function() {
 
 // CSS concat, auto-prefix and minify
 gulp.task('styles-dev', function() {
-  gulp.src(cssSrc)
+ return gulp.src(cssSrc)
     .pipe(concat('styles.css'))
     .pipe(gulp.dest(cssDst));
 });
 
 // JS hint task
 gulp.task('jshint', function() {
-  gulp.src('src/js/')
+ return gulp.src('src/js/')
     .pipe(jshint())
     .pipe(jshint.reporter('default'));
 });
 
 // JS concat, strip debugging and minify
 gulp.task('scripts-dev', function() {
-  gulp.src(jsSrc)
+ return gulp.src(jsSrc)
     .pipe(concat('libs.js'))
     .pipe(gulp.dest(jsDst));
 });
 
-gulp.task('livereload', function() {
-  var server = livereload();
-  gulp.watch(['assets/**','*.html']).on('change', function(file) {
-      server.changed(file.path);
-  });
-});
-
-
-gulp.task('watch', function() {
-    // watch for js changes
-    gulp.watch(jsSrc, ['scripts-dev', 'jshint']);
-   
-    // watch for CSS changes
-    gulp.watch(cssSrc, ['styles-dev']);
-
-    // watch for SASS changes
-    gulp.watch(compassSrc, ['compass']);
-
-    // watch for image changes
-    gulp.watch(imgSrc, ['imagemin']);
+//Minify images
+gulp.task('imagemin-dev', function() {
+ return gulp.src(imgSrc)
+    .pipe(changed(imgDst))
+    .pipe(gulp.dest(imgDst));
 });
 
 /*
@@ -126,7 +117,7 @@ gulp.task('clean', function(cb) {
 
 // CSS concat, auto-prefix and minify
 gulp.task('styles-prod', function() {
-  gulp.src(cssSrc)
+  return gulp.src(cssSrc)
     .pipe(concat('styles.css'))
     .pipe(autoprefix('last 2 versions'))
     .pipe(minifyCSS())
@@ -135,17 +126,49 @@ gulp.task('styles-prod', function() {
 
 // JS  striping the console, concatenate and uglify it
 gulp.task('scripts-prod', function() {
-  gulp.src(jsSrc)
+  return gulp.src(jsSrc)
     .pipe(concat('libs.js'))
     .pipe(stripDebug())
     .pipe(uglify())
     .pipe(gulp.dest(jsDst));
 });
 
+//Minify images
+gulp.task('imagemin-prod', function() {
+ return gulp.src(imgSrc)
+    .pipe(changed(imgDst))
+    .pipe(imagemin())
+    .pipe(gulp.dest(imgDst));
+});
+
 
 
 // Development task
-gulp.task('dev', ['connect','bower-files', 'compass', 'styles-dev', 'jshint', 'scripts-dev', 'imagemin', 'livereload', 'watch'], function() {});
+gulp.task('dev', ['compass', 'styles-dev', 'jshint', 'scripts-dev', 'imagemin-dev', 'fonts'], function() {
+  server.start();
+
+    // watch for JS changes
+    gulp.watch(jsSrc, ['scripts-dev', 'jshint', browserSync.reload]);
+   
+    // watch for CSS changes
+    gulp.watch(cssSrc, ['styles-dev', browserSync.reload]);
+
+    // watch for SASS changes
+    gulp.watch(compassSrc, ['compass', browserSync.reload]);
+
+    // watch for IMAGES changes
+    gulp.watch(imgSrc, ['imagemin-prod', browserSync.reload]);
+
+    // watch for FONT changes
+    gulp.watch(fontSrc, ['fonts', browserSync.reload]);
+
+    // watch for HTML changes
+    gulp.watch(['*.html']).on('change', function(file) {
+        browserSync.reload();
+    });
+});
 
 // Production task
-gulp.task('prod',['connect','bower-files', 'compass', 'styles-prod', 'scripts-prod', 'imagemin'], function() {});
+gulp.task('prod',['compass', 'styles-prod', 'scripts-prod', 'imagemin-prod', 'fonts'], function() {
+  server.start();
+});
