@@ -9,19 +9,23 @@ Simple web application skeleton
 Run this from the project root path
 
 ```
-bower init
+sudo npm install
 
 bower install
-
-sudo npm install --save-dev gulp gulp-jshint gulp-changed gulp-imagemin gulp-concat gulp-strip-debug gulp-uglify gulp-autoprefixer gulp-minify-css gulp-compass main-bower-files gulp-rimraf gulp-newer browser-sync
 ```
 
 ## Usage
 
+To install a bower component
+
+```
+npm install --save plugin-name
+```
+
 To get the bower files run:
 
 ```
-gulp bower-files
+gulp bower
 ```
 
 To set the <b>development</b> mode, run this in the current project root path

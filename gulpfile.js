@@ -11,11 +11,13 @@ var jshint = require('gulp-jshint'),
     autoprefix = require('gulp-autoprefixer'),
     minifyCSS = require('gulp-minify-css'),
     compass = require('gulp-compass'),
-    mainBowerFiles = require('main-bower-files'),
     rimraf = require('gulp-rimraf'),
     browserSync = require("browser-sync"),
+    wiredep = require('wiredep').stream,
     path = require('path');
 
+var request = require('request');
+var fs = require('fs');
 
 //Sources
   var htmlSrc = 'assets/*.html',
@@ -44,10 +46,17 @@ var server = {
   }
 }
 
-/*Bower components*/
-gulp.task('bower-files', function() {
-    return gulp.src(mainBowerFiles())
-          .pipe(gulp.dest(bowerDest));
+
+/* Bower */
+/* 
+Comannds:
+  $ bower install --save plugin-name
+  $ gulp bower
+*/
+gulp.task('bower', function () {
+  gulp.src('./index.html')
+    .pipe(wiredep())
+    .pipe(gulp.dest('./'));
 });
 
 /*Compass*/
@@ -67,6 +76,7 @@ gulp.task('fonts', function() {
   return gulp.src(fontSrc)
     .pipe(gulp.dest(fontDst));
 });
+
 
 /*
 ================================
