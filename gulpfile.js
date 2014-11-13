@@ -54,7 +54,7 @@ Comannds:
   $ gulp bower
 */
 gulp.task('bower', function () {
-  gulp.src('./index.html')
+  gulp.src('./*.html')
     .pipe(wiredep())
     .pipe(gulp.dest('./'));
 });
