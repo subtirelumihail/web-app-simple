@@ -65,7 +65,7 @@ gulp.task('compass', function() {
   .pipe(compass({
     css: 'src/css',
     sass: 'src/sass',
-    require: ['breakpoint']
+    require: []
   }))
   .pipe(gulp.dest('src/css'));
 });
